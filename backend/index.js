@@ -7,5 +7,5 @@ const UserRouter = require('./routes/user.js')
 /*
 routes
 */
-app.use('/api/v1', require('RootRouter'));
-app.use('/api/v1/user', require('UserRouter'));
+app.use('/api/v1', RootRouter);
+app.use('/api/v1/user', UserRouter);
