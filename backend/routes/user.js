@@ -51,6 +51,14 @@ router.post('/signup', async (req, res) => {
         userId: userId
     }, JWT_SECRET, { expiresIn: '24h' });
 
+    /*
+    Account creation
+    */
+    await Account.create({
+        userId: userId,
+        balance: 1 + Math.random() * 10000
+    })
+
     res.json({
         message: "User created successfully",
         token: token
