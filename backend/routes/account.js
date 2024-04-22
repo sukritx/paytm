@@ -3,6 +3,12 @@ const mongoose = require('mongoose');
 const { authMiddleware } = require('../middleware');
 const router = express.Router();
 const Account = require('../db.js')
+const zod = require('zod');
+
+const transactionBody = zod.object({
+    amount: zod.number().positive(),
+    to: zod.string().email()
+})
 
 router.get('/balance', authMiddleware, async (req,res) => {
     const account = await Account.findOne({
@@ -19,6 +25,14 @@ router.post('/transfer', authMiddleware, async (req,res) => {
 
     session.startTransaction();
     const { amount, to } = req.body;
+
+    const { success } = transactionBody.safeParse(req.body);
+    if (!success) {
+        await session.abortTransaction();
+        return res.status(400).json({
+            message: "Invalid transaction"
+        });
+    }
 
     // Fetch the account
     const account = await Account.findOne({ userId: req.userId }).session(session);
